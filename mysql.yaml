@@ -3,7 +3,7 @@
   become: yes
   vars:
     mysql_root_password: ExpenseApp@1
-    login_host: saiteja-guvva.online
+    login_host: mysql.saiteja-guvva.online
   tasks:
   - name: ansible to install pymysql
     ansible.builtin.pip:
