@@ -1,23 +1,27 @@
-- name: create instances and route 53 services
-hosts: local
-connection: local
-vars:
-subnet_id: "subnet-09863c54177764565" # replace with your subnet id
-    sg_id: "sg-09a300a3729062c5a"
+
+
+- name: create ec2 and r53 records
+  hosts: local
+  connection: local
+  # assignment
+  # move this to vars_files
+  vars:
+    subnet_id: "subnet-0deb5e88d1d1c6036" # replace with your subnet id
+    sg_id: "sg-0f0c6981e2e51cbc2"
     ami_id: "ami-09c813fb71547fc4f"
     instances:
-    frontend
-    backend
-    mysql
-    zone: saiteja-guvva.online
-    tasks:
-    name: ansible to install boto3 and botocore
+    - mysql
+    - backend
+    - frontend
+    zone: daws81s.online
+  tasks:
+  - name: ansible to install boto3 and botocore
     ansible.builtin.pip:
-    - Name:
-    - boto3
+      name:
+      - boto3
       - botocore
       executable: pip3.9
-      - name: create ec2 instance
+  - name: create ec2 instance
     amazon.aws.ec2_instance:
       name: "{{ item }}"
       vpc_subnet_id: "{{ subnet_id }}"
@@ -26,7 +30,8 @@ subnet_id: "subnet-09863c54177764565" # replace with your subnet id
       image_id: "{{ ami_id }}"
     loop: "{{ instances }}"
     register: ec2_instances
-     name: print the output
+
+  - name: print the output
     ansible.builtin.debug:
       msg: "{{ ec2_instances }}"
 
@@ -55,4 +60,3 @@ subnet_id: "subnet-09863c54177764565" # replace with your subnet id
       overwrite: true
     loop: "{{ ec2_instances.results }}"
     when: item.item == "frontend" #when keyword should not have {{}}
-
